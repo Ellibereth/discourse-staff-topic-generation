@@ -1,0 +1,10 @@
+plugins:
+  email_topic_generation_enabled:
+    default: true
+    client: true
+  email_topic_generation_button_title:
+    client: true
+    default: "staff email generation"
+  email_topic_generation_button_label:
+    default: "Staff Email"
+    client: true

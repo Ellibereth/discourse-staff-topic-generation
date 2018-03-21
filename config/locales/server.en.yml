@@ -1,0 +1,11 @@
+en:
+  site_settings:
+      email_topic_generation_enabled: "Enable to display custom email button."
+      email_topic_generation_button_title: ""
+      email_topic_generation_button_label: ""
+  staff_email_mailer:
+    title: "Message from %{site_name}"
+    subject_template: "You received a message from %{team_member}"
+    text_body_template: |
+      Hello %{first_name},
+      %{email_body}
