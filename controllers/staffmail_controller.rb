@@ -33,8 +33,8 @@ class ::StaffmailController < ::ApplicationController
     topic_id = params[:topic_id]
     user_id = params[:user_id]
     username = params[:user_username]
-    private_message = params[:private_message]
-    if !private_message?
+    private_message = ActiveModel::Type::Boolean.new.cast(params[:private_message])
+    if !private_message
       topic = Topic.find_by(id: topic_id)
       topic.topic_allowed_users.create(user_id: user_id)
       TopicUser.auto_notification_for_staging(user_id, topic_id, TopicUser.notification_reasons[:auto_watch])
