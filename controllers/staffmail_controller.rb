@@ -14,4 +14,18 @@ class ::StaffmailController < ::ApplicationController
       render json: {success: false}
     end
   end
+
+
+  def check_or_create_user
+    email_address = params[:email_address]
+    user = User.find_by_email(email_address)
+    if user.nil?
+      user = User.create!(
+        email: email_address,
+        username: User.suggest_name(email_address),
+        name: User.suggest_name(email_address),
+        staged: true)
+    end
+    render json: {user: user}
+  end
 end
