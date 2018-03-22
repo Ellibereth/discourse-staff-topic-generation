@@ -13,5 +13,6 @@ after_initialize do
 
   Discourse::Application.routes.prepend do
     post 'staffmail/send_notification' => 'staffmail#send_notification'
+    post 'staffmail/check_or_create_user' => 'staffmail#check_or_create_user'
   end
 end
