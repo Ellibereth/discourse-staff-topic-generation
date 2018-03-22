@@ -31,10 +31,11 @@ export default {
 
         /*
           I opted to use sweetalert2 to make a pretty popup for this. Was easy enough
-          to implement and worked pretty well. 
+          to implement and worked pretty well.
         */
         api.attachWidgetAction('header', 'staffEmail', function() {
           var model = this;
+          let subject = "", firstname = "", emailAddress = "", body = "", archetype = "";
           sweetalert({
             title: Discourse.SiteSettings.email_topic_generation_button_label,
             html:
@@ -42,8 +43,14 @@ export default {
               <input id="staff-email-first-name" class="swal2-input">
               <label class="staff-email-label" for="staff-email-address">Email</label>
               <input id="staff-email-address" class="swal2-input">
+              <label class="staff-email-label" for="staff-email-subject">Subject</label>
+              <input id="staff-email-subject" class="swal2-input">
               <label class="staff-email-label" for="staff-email-body">Message</label>
-              <textarea id="staff-email-body" class="swal2-textarea">`,
+              <textarea id="staff-email-body" class="swal2-textarea"></textarea>
+              <select style="width: 100%" class="swal2-select" id="staff-email-message-type">
+                <option value="private_message">Private Message</option>
+                <option value="regular">Public Topic</option>
+              </select>`,
             backdrop: `
               rgba(105,104,104,.5)
             `,
@@ -66,30 +73,57 @@ export default {
                 validInput = false;
               }
 
+              if($('#staff-email-subject').val() === null || $('#staff-email-subject').val() === ''){
+                sweetalert.showValidationError('You must enter an email subject.');
+                validInput = false;
+              }
+
               if(validInput){
+                firstname = $('#staff-email-first-name').val();
+                emailAddress = $('#staff-email-address').val();
+                body = $('#staff-email-body').val();
+                subject = $('#staff-email-subject').val();
+                archetype = $('#staff-email-message-type').val();
                 return new Promise(function (resolve) {
-                  resolve([
-                    $('#staff-email-first-name').val(),
-                    $('#staff-email-address').val(),
-                    $('#staff-email-body').val()
-                  ])
+                  resolve(true)
                 })
               }
             }
           }).then(function (result) {
-            return ajax("/staffmail/send_notification", {
+            return ajax("/staffmail/check_or_create_user", {
+              dataType: 'json',
+              data: {email_address: emailAddress},
+              type: 'POST'
+            }).then((response) => {
+              return ajax("/posts", {
                 dataType: 'json',
-                data: { first_name: result.value[0],
-                        to_address: result.value[1],
-                        message_body: result.value[2],
-                        staff_username: "jose"},
-                type: 'POST',
-                error: () => {
-                  //TODO: Handle errors
-                }
-              }).then(function (response) {
-                //TODO: Display success
-              }).catch();
+                data: {
+                  title: subject,
+                  raw: body,
+                  archetype: archetype,
+                  target_usernames: response.user.username
+                },
+                type: 'POST'
+              }).then((response) => {
+                return ajax("", {
+                  //TODO: Invite user
+                }).then((response) => {
+                  return ajax("/staffmail/send_notification", {
+                    dataType: 'json',
+                    data: { first_name: result.value[0],
+                            to_address: result.value[1],
+                            message_body: result.value[2],
+                            staff_username: "jose"},
+                    type: 'POST',
+                    error: () => {
+                      //TODO: Handle errors
+                    }
+                  }).then((response) => {
+                    //TODO: show success
+                  })
+                })
+              })
+            });
           }).catch(sweetalert.noop)
         });
       });
