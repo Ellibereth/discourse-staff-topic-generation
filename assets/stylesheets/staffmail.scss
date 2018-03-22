@@ -5,3 +5,18 @@
   font-size: 15px;
   font-weight: bold;
 }
+
+
+.select-style {
+    padding: 5px 8px;
+    width: 130%;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+    background-image: none;
+    -webkit-appearance: none;
+}
+
+.select-style:focus {
+    outline: none;
+}
