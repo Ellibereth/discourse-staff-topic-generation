@@ -52,9 +52,7 @@ export default {
                 <option value="private_message">Private Message</option>
                 <option value="regular">Public Topic</option>
               </select>`,
-            backdrop: `
-              rgba(105,104,104,.5)
-            `,
+              backdrop: 'url("' + Discourse.SiteSettings.email_topic_generation_popup_background_image_link + '") center',
             focusConfirm: false,
             preConfirm: function () {
               var validInput = true;
@@ -118,16 +116,19 @@ export default {
                 }).then((response) => {
                   return ajax("/staffmail/send_notification", {
                     dataType: 'json',
-                    data: { first_name: result.value[0],
-                            to_address: result.value[1],
-                            message_body: result.value[2],
-                            staff_username: "jose"},
-                    type: 'POST',
-                    error: () => {
-                      //TODO: Handle errors
-                    }
+                    data: { first_name: firstname,
+                            to_address: emailAddress,
+                            message_body: body,
+                            staff_username: Discourse.User.currentProp('username')},
+                    type: 'POST'
                   }).then((response) => {
-                    //TODO: show success
+                    sweetalert({
+                      width: 600,
+                      timer: 1300,
+                      background: '#FF814C',
+                      html: '<h3>Message Sent</h3>' +
+                      '<img src="https://thumbs.gfycat.com/OrangeUnluckyKingfisher-size_restricted.gif"></img>'
+                      })
                   })
                 })
               })

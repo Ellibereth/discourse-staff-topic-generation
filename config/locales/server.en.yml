@@ -1,6 +1,7 @@
 en:
   site_settings:
       email_topic_generation_enabled: "Enable to display custom email button."
+      email_topic_generation_popup_background_image_link: "Set to apply an image to the background."
       email_topic_generation_button_title: ""
       email_topic_generation_button_label: ""
   staff_email_mailer:
