@@ -35,7 +35,8 @@ export default {
         */
         api.attachWidgetAction('header', 'staffEmail', function() {
           var model = this;
-          let subject = "", firstname = "", emailAddress = "", body = "", archetype = "";
+          let subject = "", firstname = "", emailAddress = "", body = "", archetype = "", private_message = false;
+          let user = null;
           sweetalert({
             title: Discourse.SiteSettings.email_topic_generation_button_label,
             html:
@@ -95,18 +96,25 @@ export default {
               data: {email_address: emailAddress},
               type: 'POST'
             }).then((response) => {
+              user = response.user;
+              private_message = (archetype === "private_message") ? true : false;
               return ajax("/posts", {
                 dataType: 'json',
                 data: {
                   title: subject,
                   raw: body,
                   archetype: archetype,
-                  target_usernames: response.user.username
+                  target_usernames: user.username
                 },
                 type: 'POST'
               }).then((response) => {
-                return ajax("", {
-                  //TODO: Invite user
+                return ajax("staffmail/add_user_to_topic_no_email", {
+                  dataType: 'json',
+                  data: { user_id: user.id,
+                          user_username: user.username,
+                          topic_id: response.topic_id,
+                          private_message: private_message },
+                  type: 'POST'
                 }).then((response) => {
                   return ajax("/staffmail/send_notification", {
                     dataType: 'json',
