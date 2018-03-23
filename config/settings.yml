@@ -11,3 +11,12 @@ plugins:
   email_topic_generation_popup_background_image_link:
     default: ""
     client: true
+  email_topic_generation_icon:
+    default: ""
+    client: true
+  email_topic_generation_conf_popup_color:
+    default: ""
+    client: true
+  email_topic_generation_conf_popup_icon:
+    default: ""
+    client: true

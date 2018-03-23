@@ -16,15 +16,15 @@ export default {
           if (currentUser && currentUser.staff) {
             const unread = currentUser.get('unread_private_messages');
             contents.push(helper.attach('header-dropdown', {
-              title: 'user.private_messages',
-              icon: 'paper-plane',
-              iconId: 'toggle-messages-menu',
+              title: Discourse.SiteSettings.email_topic_generation_button_title,
+              icon: Discourse.SiteSettings.email_topic_generation_icon,
+              iconId: 'toggle-staff-email',
               active: headerState.messagesVisible,
               action: 'staffEmail'
             }));
           }
           if (headerState.messagesVisible) {
-            contents.push(helper.attach('messages-menu'));
+            contents.push(helper.attach('staff-email'));
           }
           return contents;
         });
@@ -35,7 +35,7 @@ export default {
         */
         api.attachWidgetAction('header', 'staffEmail', function() {
           var model = this;
-          let subject = "", firstname = "", emailAddress = "", body = "", archetype = "", private_message = false;
+          let subject = "", firstname = "", emailAddress = "", body = "", archetype = "", private_message = false, files = [];
           let user = null;
           sweetalert({
             title: Discourse.SiteSettings.email_topic_generation_button_label,
@@ -51,7 +51,8 @@ export default {
               <select style="width: 100%" class="swal2-select" id="staff-email-message-type">
                 <option value="private_message">Private Message</option>
                 <option value="regular">Public Topic</option>
-              </select>`,
+              </select>
+              `,
               backdrop: 'url("' + Discourse.SiteSettings.email_topic_generation_popup_background_image_link + '") center',
             focusConfirm: false,
             preConfirm: function () {
@@ -117,14 +118,20 @@ export default {
                   sweetalert({
                     width: 600,
                     timer: 1300,
-                    background: '#FF814C',
+                    background: Discourse.SiteSettings.email_topic_generation_conf_popup_color,
                     html: '<h3>Message Sent</h3>' +
-                    '<img src="https://thumbs.gfycat.com/OrangeUnluckyKingfisher-size_restricted.gif"></img>'
+                    '<img alt="Success!" src="' + Discourse.SiteSettings.email_topic_generation_conf_popup_icon + '"></img>'
                     })
                 });
               })
             });
-          }).catch(sweetalert.noop)
+          }).catch(error => {
+            sweetalert({
+              type: 'error',
+              title: 'Uh oh...',
+              text: error.jqXHR.responseJSON.errors[0]
+            })
+          })
         });
       });
     }
