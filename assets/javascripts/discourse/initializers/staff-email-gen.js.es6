@@ -114,23 +114,14 @@ export default {
                           private_message: private_message },
                   type: 'POST'
                 }).then((response) => {
-                  return ajax("/staffmail/send_notification", {
-                    dataType: 'json',
-                    data: { first_name: firstname,
-                            to_address: emailAddress,
-                            message_body: body,
-                            staff_username: Discourse.User.currentProp('username')},
-                    type: 'POST'
-                  }).then((response) => {
-                    sweetalert({
-                      width: 600,
-                      timer: 1300,
-                      background: '#FF814C',
-                      html: '<h3>Message Sent</h3>' +
-                      '<img src="https://thumbs.gfycat.com/OrangeUnluckyKingfisher-size_restricted.gif"></img>'
-                      })
-                  })
-                })
+                  sweetalert({
+                    width: 600,
+                    timer: 1300,
+                    background: '#FF814C',
+                    html: '<h3>Message Sent</h3>' +
+                    '<img src="https://thumbs.gfycat.com/OrangeUnluckyKingfisher-size_restricted.gif"></img>'
+                    })
+                });
               })
             });
           }).catch(sweetalert.noop)
