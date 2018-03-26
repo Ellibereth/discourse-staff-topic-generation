@@ -13,6 +13,6 @@ after_initialize do
 
   Discourse::Application.routes.prepend do
     post 'staffmail/check_or_create_user' => 'staffmail#check_or_create_user'
-    post 'staffmail/add_user_to_topic_no_email' => 'staffmail#add_user_to_topic'
+    post 'staffmail/add_user_to_topic' => 'staffmail#add_user_to_topic'
   end
 end

@@ -9,25 +9,23 @@ export default {
   name: 'staff-email-generation',
   initialize(container) {
     withPluginApi('0.8', api => {
+      if(Discourse.SiteSettings.email_topic_generation_enabled){
         api.decorateWidget('header-icons:before', function(helper) {
           const currentUser = api.getCurrentUser();
           const headerState = helper.widget.parentWidget.state;
           let contents = [];
           if (currentUser && currentUser.staff) {
-            const unread = currentUser.get('unread_private_messages');
             contents.push(helper.attach('header-dropdown', {
-              title: Discourse.SiteSettings.email_topic_generation_button_title,
+              title: "Staff Messaging",
               icon: Discourse.SiteSettings.email_topic_generation_icon,
               iconId: 'toggle-staff-email',
-              active: headerState.messagesVisible,
+              active: false,
               action: 'staffEmail'
             }));
           }
-          if (headerState.messagesVisible) {
-            contents.push(helper.attach('staff-email'));
-          }
           return contents;
-        });
+        })
+      };
 
         /*
           I opted to use sweetalert2 to make a pretty popup for this. Was easy enough
@@ -107,7 +105,7 @@ export default {
                 },
                 type: 'POST'
               }).then((response) => {
-                return ajax("staffmail/add_user_to_topic_no_email", {
+                return ajax("/staffmail/add_user_to_topic", {
                   dataType: 'json',
                   data: { user_id: user.id,
                           user_username: user.username,
@@ -120,17 +118,21 @@ export default {
                     timer: 1300,
                     background: Discourse.SiteSettings.email_topic_generation_conf_popup_color,
                     html: '<h3>Message Sent</h3>' +
-                    '<img alt="Success!" src="' + Discourse.SiteSettings.email_topic_generation_conf_popup_icon + '"></img>'
+                    '<img alt="Success!" style="width:100%; height:auto" src="' + Discourse.SiteSettings.email_topic_generation_conf_popup_icon + '"></img>'
                     })
                 });
               })
             });
           }).catch(error => {
+            try{
             sweetalert({
               type: 'error',
               title: 'Uh oh...',
               text: error.jqXHR.responseJSON.errors[0]
             })
+          }catch(err){
+            //Just catching, this fires when the dialog is dismissed with no email sent.
+          }
           })
         });
       });
